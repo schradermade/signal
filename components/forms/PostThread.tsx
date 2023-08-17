@@ -1,4 +1,5 @@
 "use client";
+
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -20,20 +21,21 @@ import { Textarea } from "../ui/textarea";
 import { ThreadValidation } from "@/lib/validations/thread";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { createThread } from "@/lib/actions/thread.actions";
 
-interface Props {
-  user: {
-    id: string;
-    objectId: string;
-    username: string;
-    name: string;
-    bio: string;
-    image: string;
-  };
-  btnTitle: string;
-}
+// interface Props {
+//   user: {
+//     id: string;
+//     objectId: string;
+//     username: string;
+//     name: string;
+//     bio: string;
+//     image: string;
+//   };
+//   btnTitle: string;
+// }
 
-function PostThread({ userId }: Params) {
+function PostThread({ userId }: any) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -45,14 +47,23 @@ function PostThread({ userId }: Params) {
     },
   });
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
+    await createThread({
+      text: values.thread,
+      author: userId,
+      communityId: null,
+      path: pathname,
+    });
+
+    router.push("/");
+  };
 
   return (
     <>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col justify-start gap-10"
+          className="mt-10 flex flex-col justify-start gap-10"
         >
           <FormField
             control={form.control}
@@ -69,6 +80,10 @@ function PostThread({ userId }: Params) {
               </FormItem>
             )}
           />
+
+          <Button type="submit" className="bg-primary-500">
+            Post Thread
+          </Button>
         </form>
       </Form>
     </>
