@@ -70,12 +70,12 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   return { posts, isNext };
 }
 
-export async function fetchThreadById(id: string) {
+export async function fetchThreadById(threadId: string) {
   connectToDB();
 
   try {
     // TODO Populate Community
-    const thread = await Thread.findById(id)
+    const thread = await Thread.findById(threadId)
       .populate({
         path: "author",
         model: User,
@@ -97,6 +97,8 @@ export async function fetchThreadById(id: string) {
         ],
       })
       .exec();
+
+    return thread;
   } catch (error: any) {
     throw new Error(`Error fetching thread: ${error.mesage}`);
   }
