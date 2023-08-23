@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "../ui/textarea";
+import { useOrganization } from "@clerk/shared";
 
 // import { updateUser } from "@/lib/actions/user.actions";
 // import { usePathname, useRouter } from "next/navigation";
@@ -38,6 +39,7 @@ import { createThread } from "@/lib/actions/thread.actions";
 function PostThread({ userId }: any) {
   const router = useRouter();
   const pathname = usePathname();
+  const { organization } = useOrganization();
 
   const form = useForm({
     resolver: zodResolver(ThreadValidation),
@@ -48,10 +50,11 @@ function PostThread({ userId }: any) {
   });
 
   const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
+    console.log("ORG ID:", organization);
     await createThread({
       text: values.thread,
       author: userId,
-      communityId: null,
+      communityId: organization ? organization.id : null,
       path: pathname,
     });
 
